@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
+from fpdf import FPDF
+from zenrows import ZenRowsClient
 
 app = Flask(__name__)
 
@@ -24,7 +26,16 @@ def search():
     links = soup.find_all("a")
     urls = [clean_url(link.get("href")) for link in links if "url?q=" in link.get("href")]
     
-    return urls
+    scraped_data = []
+    for url in urls:
+        
+        scraped_data.append({
+            "url": url
+        })
+    return scraped_data
+
+def scrapeData(urls):
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
