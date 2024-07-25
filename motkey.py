@@ -4,7 +4,7 @@ import requests
 from zenrows import ZenRowsClient
 from fpdf import FPDF
 import logging
-from urllib.parse import urlparse, urljoin, unquote
+from urllib.parse import urlparse, urljoin, unquote, quote
 
 app = Flask(__name__)
 
@@ -39,13 +39,18 @@ def search():
     return jsonify({"urls": urls, "scraped_data": scraped_data})
 
 def google_search(query):
-    url = f"https://www.google.com/search?q={query}"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
+    encoded_query = quote(query)
+    url = f"https://www.google.com/search?q={encoded_query}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(url, headers=headers, allow_redirects=True)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
         return soup
-    return None
+    else:
+        logging.error(f"Error fetching data: {response.status_code} for URL: {url}")
+        return None
 
 def clean_url(url):
     url = unquote(url)  # Decode URL
