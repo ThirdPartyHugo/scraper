@@ -4,6 +4,7 @@ import requests
 from zenrows import ZenRowsClient
 from fpdf import FPDF
 import logging
+from urllib.parse import urlparse, urljoin, unquote
 
 app = Flask(__name__)
 
@@ -47,7 +48,13 @@ def google_search(query):
     return None
 
 def clean_url(url):
-    url = url.split('&')[0].replace('/url?q=', '')
+    url = unquote(url)  # Decode URL
+    if url.startswith('/url?q='):
+        url = url.split('&')[0].replace('/url?q=', '')
+    # Ensure URL is fully qualified
+    parsed_url = urlparse(url)
+    if not parsed_url.scheme:
+        url = urljoin('https://www.google.com', url)
     return url
 
 def scrape_with_zenrows(url):
@@ -57,10 +64,13 @@ def scrape_with_zenrows(url):
         if response.status_code == 200:
             return {"data": response.text}
         elif response.status_code == 404:
-            logging.error(f"Resource not found: {url}")
+            logging.error(f"Resource not found (404): {url}")
             return {"error": "Resource not found (404)"}
+        elif response.status_code == 400:
+            logging.error(f"Bad request (400) for URL: {url}")
+            return {"error": "Bad request (400). The URL may be malformed or missing parameters."}
         elif response.status_code == 403:
-            logging.error(f"Access forbidden for URL: {url}")
+            logging.error(f"Access forbidden (403) for URL: {url}")
             return {"error": "Access forbidden (403). You might be blocked or your API key doesn't have access."}
         else:
             logging.error(f"Unexpected status code {response.status_code} for URL: {url}")
