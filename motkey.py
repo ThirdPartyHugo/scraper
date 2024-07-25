@@ -51,12 +51,15 @@ def search():
     return jsonify({"urls": urls, "scraped_data": scraped_data})
 
 def google_search(query):
-    url = f"https://www.google.com/search?q={quote(query)}"
+    encoded_query = quote(query)
+    url = f"https://www.google.com/search?q={encoded_query}"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
     }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
+        # Log the raw HTML for debugging
+        logging.info(f"Google search HTML: {response.text}")
         soup = BeautifulSoup(response.text, "html.parser")
         logging.info("Google search successful")
         return soup
