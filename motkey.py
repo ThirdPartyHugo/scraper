@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from bs4 import BeautifulSoup
 import requests
 from zenrows import ZenRowsClient
-from fpdf import FPDF
 import logging
 from urllib.parse import urlparse, urljoin, unquote, quote
 
@@ -27,6 +26,9 @@ def search():
     links = soup.find_all("a")
     urls = [clean_url(link.get("href")) for link in links if link.get("href") and "url?q=" in link.get("href")]
 
+    # Logging URLs found
+    logging.info(f"Found URLs: {urls}")
+
     # Iterate over the URLs and scrape data for each using ZenRows
     scraped_data = []
     for url in urls:
@@ -36,6 +38,9 @@ def search():
             "data": detailed_data
         })
     
+    # Logging scraped data
+    logging.info(f"Scraped data: {scraped_data}")
+
     return jsonify({"urls": urls, "scraped_data": scraped_data})
 
 def google_search(query):
@@ -85,4 +90,5 @@ def scrape_with_zenrows(url):
         return {"error": f"An error occurred: {e}"}
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     app.run(debug=True)
