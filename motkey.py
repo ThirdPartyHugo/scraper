@@ -43,7 +43,7 @@ def search():
     # Log scraped data
     logging.info(f"Scraped data: {scraped_data}")
 
-    return jsonify({"urls": urls, "scraped_data": scraped_data})
+    return jsonify(urls)
 
 def google_search(query):
     url = f"https://www.google.com/search?q={quote(query)}"
