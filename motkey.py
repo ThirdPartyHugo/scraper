@@ -25,7 +25,7 @@ def search():
     if not soup:
         return jsonify({"error": "Failed to fetch data from Google"}), 500
     links = soup.find_all("a")
-    urls = [clean_url(link.get("href")) for link in links if "url?q=" in link.get("href")]
+    urls = [clean_url(link.get("href")) for link in links if link.get("href") and "url?q=" in link.get("href")]
 
     # Iterate over the URLs and scrape data for each using ZenRows
     scraped_data = []
