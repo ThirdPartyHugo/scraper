@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from zenrows import ZenRowsClient
 import logging
-from urllib.parse import urlparse, urljoin, unquote, quote  # Import quote here
+from urllib.parse import urlparse, urljoin, unquote, quote
 
 app = Flask(__name__)
 
@@ -31,6 +31,11 @@ def search():
     # Log URLs found
     logging.info(f"Found URLs: {urls}")
 
+    # If no URLs were found, return an appropriate message
+    if not urls:
+        logging.info("No URLs found.")
+        return jsonify({"error": "No URLs found in the search results."})
+
     # Iterate over the URLs and scrape data for each using ZenRows
     scraped_data = []
     for url in urls:
@@ -43,7 +48,7 @@ def search():
     # Log scraped data
     logging.info(f"Scraped data: {scraped_data}")
 
-    return jsonify(urls)
+    return jsonify({"urls": urls, "scraped_data": scraped_data})
 
 def google_search(query):
     url = f"https://www.google.com/search?q={quote(query)}"
@@ -53,6 +58,7 @@ def google_search(query):
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, "html.parser")
+        logging.info("Google search successful")
         return soup
     else:
         logging.error(f"Error fetching data: {response.status_code} for URL: {url}")
@@ -72,6 +78,7 @@ def scrape_with_zenrows(url):
         # Get the response from the ZenRows API
         response = client.get(url)
         if response.status_code == 200:
+            logging.info(f"Scraped data from {url}")
             return response.text
         elif response.status_code == 404:
             logging.error(f"Resource not found (404): {url}")
