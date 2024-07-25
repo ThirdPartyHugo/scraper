@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from zenrows import ZenRowsClient
 import logging
+from urllib.parse import urlparse, urljoin, unquote, quote  # Import quote here
 
 app = Flask(__name__)
 
