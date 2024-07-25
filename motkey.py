@@ -37,14 +37,14 @@ def search():
 
 def scrapeData(url):
     try:
-    # Get the response from the API
-    response = client.get(url)
-    if response.status_code == 200:
-        data = response.text  # Assuming the response is text-based
-    else:
-        data = f"Error: Received status code {response.status_code}"
-except Exception as e:
-    data = f"An error occurred: {e}"
+        # Get the response from the API
+        response = client.get(url)
+        if response.status_code == 200:
+            data = response.text  # Assuming the response is text-based
+        else:
+            data = f"Error: Received status code {response.status_code}"
+    except Exception as e:
+        data = f"An error occurred: {e}"
     
 
 if __name__ == '__main__':
