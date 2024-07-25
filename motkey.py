@@ -23,7 +23,8 @@ def search():
     soup = google_search(query)
     links = soup.find_all("a")
     urls = [clean_url(link.get("href")) for link in links if "url?q=" in link.get("href")]
-    return jsonify(urls)
+    
+    return urls
 
 if __name__ == '__main__':
     app.run(debug=True)
