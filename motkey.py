@@ -28,14 +28,23 @@ def search():
     
     scraped_data = []
     for url in urls:
-        
+        data = scrapedData(url)
         scraped_data.append({
-            "url": url
+            "url": url,
+            "data": data
         })
     return scraped_data
 
-def scrapeData(urls):
-    pass
+def scrapeData(url):
+    try:
+    # Get the response from the API
+    response = client.get(url)
+    if response.status_code == 200:
+        data = response.text  # Assuming the response is text-based
+    else:
+        data = f"Error: Received status code {response.status_code}"
+except Exception as e:
+    data = f"An error occurred: {e}"
     
 
 if __name__ == '__main__':
