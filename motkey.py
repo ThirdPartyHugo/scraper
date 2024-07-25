@@ -32,6 +32,7 @@ def search():
     # Iterate over the URLs and scrape data for each using ZenRows
     scraped_data = []
     for url in urls:
+        print(url)
         detailed_data = scrape_with_zenrows(url)
         scraped_data.append({
             "url": url,
