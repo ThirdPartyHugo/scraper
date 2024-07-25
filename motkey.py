@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from zenrows import ZenRowsClient
 from fpdf import FPDF
+import logging
 
 app = Flask(__name__)
 
@@ -24,13 +25,17 @@ def search():
         return jsonify({"error": "Failed to fetch data from Google"}), 500
     links = soup.find_all("a")
     urls = [clean_url(link.get("href")) for link in links if "url?q=" in link.get("href")]
+
+    # Iterate over the URLs and scrape data for each using ZenRows
+    scraped_data = []
+    for url in urls:
+        detailed_data = scrape_with_zenrows(url)
+        scraped_data.append({
+            "url": url,
+            "data": detailed_data
+        })
     
-    # For demonstration, let's scrape one of the URLs using ZenRows
-    # This can be adjusted based on your actual use case
-    if urls:
-        detailed_data = scrape_with_zenrows(urls[0])
-        return jsonify({"urls": urls, "detailed_data": detailed_data})
-    return jsonify(urls)
+    return jsonify({"urls": urls, "scraped_data": scraped_data})
 
 def google_search(query):
     url = f"https://www.google.com/search?q={query}"
@@ -50,10 +55,18 @@ def scrape_with_zenrows(url):
         # Get the response from the ZenRows API
         response = client.get(url)
         if response.status_code == 200:
-            return {"data": response.text}  # Assuming the response is text-based
+            return {"data": response.text}
+        elif response.status_code == 404:
+            logging.error(f"Resource not found: {url}")
+            return {"error": "Resource not found (404)"}
+        elif response.status_code == 403:
+            logging.error(f"Access forbidden for URL: {url}")
+            return {"error": "Access forbidden (403). You might be blocked or your API key doesn't have access."}
         else:
-            return {"error": f"Received status code {response.status_code}"}
+            logging.error(f"Unexpected status code {response.status_code} for URL: {url}")
+            return {"error": f"Unexpected status code {response.status_code}"}
     except Exception as e:
+        logging.error(f"An error occurred: {e}")
         return {"error": f"An error occurred: {e}"}
 
 if __name__ == '__main__':
