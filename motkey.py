@@ -28,7 +28,7 @@ def search():
     
     scraped_data = []
     for url in urls:
-        data = scrapedData(url)
+        data = scrapeData(url)
         scraped_data.append({
             "url": url,
             "data": data
