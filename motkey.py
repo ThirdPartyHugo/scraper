@@ -37,6 +37,7 @@ def search():
 
 def scrapeData(url):
     try:
+        client = ZenRowsClient("68904253c46be2ad491229afc13e3785baf61f0e")
         # Get the response from the API
         response = client.get(url)
         if response.status_code == 200:
