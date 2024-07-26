@@ -36,19 +36,24 @@ def search():
     urls = [clean_url(link.get("href")) for link in links if "url?q=" in link.get("href")]
     
     scraped_data = []
-    for url in urls:
-        
+    for index, url in enumerate(urls):
+        if index == 1:
+            data = scrapeData(url)
+        else:
+            data = None  # Or some default value or handling
+
         scraped_data.append({
-            "url": url
-            
+            "url": url,
+            "data": data
         })
+
     
     return jsonify(scraped_data)
 
 def scrapeData(url):
     try:
         client = ZenRowsClient("68904253c46be2ad491229afc13e3785baf61f0e")
-        response = client.get(url, timeout=10)  # Set a timeout for the request
+        response = client.get(url, timeout=100)  # Set a timeout for the request
         if response.status_code == 200:
             data = response.text
         else:
