@@ -37,10 +37,10 @@ def search():
     
     scraped_data = []
     for url in urls:
-        data = scrapeData(url)
+        
         scraped_data.append({
-            "url": url,
-            "data": data
+            "url": url
+            
         })
     
     return jsonify(scraped_data)
