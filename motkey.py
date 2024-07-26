@@ -37,7 +37,7 @@ def search():
     
     scraped_data = []
     for index, url in enumerate(urls):
-        if index == 1:
+        if index == 3:
             data = scrapeData(url)
         else:
             data = None  # Or some default value or handling
@@ -53,7 +53,7 @@ def search():
 def scrapeData(url):
     try:
         client = ZenRowsClient("68904253c46be2ad491229afc13e3785baf61f0e")
-        response = client.get(url, timeout=100)  # Set a timeout for the request
+        response = client.get(url)  # Set a timeout for the request
         if response.status_code == 200:
             data = response.text
         else:
